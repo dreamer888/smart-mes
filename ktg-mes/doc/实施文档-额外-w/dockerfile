@@ -1,0 +1,23 @@
+#  主机 47.242.184.27下面 运行 jar - jar  ktg-admin.jar失败 ，只好使用   主机150.158.15.149 的 虚拟机 opt/ktg-docker
+
+
+FROM openjdk:8
+
+# 指定维护者的名字
+
+MAINTAINER lgl
+
+# 将当前目录下的jar包复制到docker容器的/目录下 
+
+COPY ./ktg-admin.jar /app/ktg-admin.jar
+
+RUN bash -c 'touch /app/ktg-admin.jar'
+
+ENTRYPOINT ["java","-jar","/app/ktg-admin.jar"]
+
+# docker build -t ktg-admin .
+# 末尾的点不可忽略 表示dockerfile和jar包在同级
+#docker images    列出 ktg-admin
+#docker run -d --name ktg-admin -p 8070:8070 -v/opt/ktg-docker/  ktg-admin
+
+

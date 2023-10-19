@@ -1,0 +1,58 @@
+
+
+参考 文档 https://baijiahao.baidu.com/s?id=1709489660635140272&wfr=spider&for=pc
+
+部署到 150.158.15.149
+
+docker search minio
+
+docker pull minio/minio
+
+docker  images  
+
+发现 minio/minio的 tag是 lastest， 启动的时候 是否需要带上lastest呢 
+
+docker run -p 9000:9000 -p 9090:9090 \
+     --net=host \
+     --name minio \
+     -d --restart=always \
+     -e "MINIO_ACCESS_KEY=admin" \
+     -e "MINIO_SECRET_KEY=admin123456" \
+     -v /home/minio/data:/data \
+     -v /home/minio/config:/root/.minio \
+     minio/minio server \
+     /data --console-address ":9090" -address ":9000"
+
+
+使用 下面这个 创建
+我自己使用的端口是 3031部署9000啊 ，
+
+docker run -p 9000:9000 --name minio -d --restart=always  -e "MINIO_ACCESS_KEY=admin"  -e "MINIO_SECRET_KEY=admin123456"  -v /home/minio/data:/data  -v /home/minio/config:/root/.minio  minio/minio server /data
+
+
+
+
+[root@localhost /]# docker ps -a
+
+docker logs a4894f028d54
+
+ minio 安装的日志信息，其中 AccessKey 和 SecretKey 是登陆 minio 客户端的用户名和秘钥
+
+1 浏览器输入地址进行登录
+
+http://150.158.15.149:3031
+
+浏览器输入 AccessKey 和 SecretKey
+
+admin/admin123456
+
+minio client 不支持有下划线的桶名称(bucket name)命名,支持中划线的命名,故所有桶的名称建议中划线或者无中划线进行命名。
+
+
+
+
+
+
+
+
+

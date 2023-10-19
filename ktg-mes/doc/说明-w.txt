@@ -1,0 +1,344 @@
+server
+{
+
+listen 8071;
+   
+server_name 47.242.184.27;
+http://localhost:8071/
+amdin/admin
+
+ root /opt/ktg-mes/dist;
+ try_files $uri $uri/ /index.html;
+ index  index.html index.htm;
+
+
+ location /prod-api/{
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header REMOTE-HOST $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://150.158.15.149:8070/;
+      } 
+
+
+}
+
+
+后端 端口 3033 
+http://localhost:3033/swagger-ui/index.html
+
+
+150.158.15.149 的 ktg-j2eedb是107张表 ，  应该是没有把 trigger的表给整合进去的原因 吧
+
+
+d:\projects\mes\ktg-mes\doc\实施文档\ktgmes_20230505_115713.sql\ktgmes_20230505_115713.sql， 123张数据库表
+d:\projects\mes\ktg-mes\sql\ktg_quartz.sql 有12张表  
+
+d:\projects\mes\ktg-mes\sql\ry_20210908.sql 有 有19张表  
+
+正式发布 ，前端打包      d:\projects\mes\ktg-front\ktg-mes-ui  ,   
+ npm  run build:prod   打包结果， 放到 nginx下面调试下
+d:\projects\mes\ktg-front\ktg-mes-ui\dist
+
+VUE_APP_BASE_API = '/prod-api'
+
+
+devServer: {
+    host: '0.0.0.0',
+    port: port,
+    open: true,
+    proxy: {
+      // detail: https://cli.vuejs.org/config/#devserver-proxy
+      [process.env.VUE_APP_BASE_API]: {
+        //target: `http://localhost:8080`,
+	 target: `http://localhost:3033`,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      },
+      '/ureport': {
+        //target: 'http://localhost:8080',
+	target: 'http://localhost:3033',
+        ws:false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/ureport': '/ureport'
+        }
+      },
+    },
+
+
+
+UReport2是一款基于架构在Spring之上纯Java的高性能报表引擎,通过迭代单元格可以实现任意复杂的中国式报表。
+/**
+ * 全局配置文件
+ */
+export default {
+  //reportUrl: 'http://localhost:8080/ureport',
+  reportUrl: 'http://localhost:8070/ureport',
+
+}
+
+
+KTG-MES ， 报表设计
+
+http://localhost:8071/report/designer
+
+{"msg":"请求访问：/designer，认证失败，无法访问系统资源","code":401}
+
+{"msg":"请求访问：/ureportdesigner，认证失败，无法访问系统资源","code":401}
+
+===swagger=====
+token 的配置 是怎么弄的 ？
+
+swagger:
+  # 是否开启swagger
+  enabled: true
+  # 请求前缀
+  #pathMapping: /prod-api
+  pathMapping: /dev-api
+
+swagger 如何访问呢 ？
+http://localhost:8080/dev-api/swagger-ui.html
+url: process.env.VUE_APP_BASE_API + "/swagger-ui/index.html"
+
+http://localhost:8080/swagger-ui/index.html
+
+
+http://47.242.184.27:8070/swagger-ui/index.html   ????
+
+
+
+==minio====
+
+
+miniostart.bat定义minio的配置文件 :
+
+set MINIO_ROOT_USER=admin
+set MINIO_ROOT_PASSWORD=12345678
+minio.exe server --console-address :3030 --address :3031 d:/tools/minio/minioData/data1 d:/tools/minio/minioData/data2
+
+d:\tools\minio\  目录下面运行  miniostart.bat 启动 minio
+ 
+控制台 web访问 地址 minio url : http://127.0.0.1:3030
+
+bucket Name点击Manage，点击AccessPolicy后面的icon（图标），将访问权限改为Public
+
+java  api的 访问地址其实是 
+http://127.0.0.1:3031
+发现  3030  和 3031  没有什么差别呢 ？
+
+putObject 函数出现异常  ：
+
+io.minio.errors.InvalidResponseException: Non-XML response from server. Response code: 400, Content-Type: text/xml; charset=utf-8, body: <?xml version="1.0" encoding="UTF-8"?><Error><Code>InvalidArgument</Code><Message>S3 API Requests must be made to API port.</Message><RequestId>0</RequestId></Error>
+
+Response response = this.execute(Method.PUT, bucketName, objectName, this.getRegion(bucketName, region), this.httpHeaders(headers), extraQueryParams, data, length);
+
+
+Request{method=GET, url=http://150.158.15.149:9090/ktg-mes?location=, tags={}}
+Response{protocol=http/1.1, code=400, message=Bad Request, url=http://150.158.15.149:9090/ktg-mes?location=}
+
+Request{method=GET, url=http://127.0.0.1:3031/ktg-mes?location=, tags={}}
+
+Response{protocol=http/1.1, code=200, message=OK, url=http://127.0.0.1:3031/ktg-mes?location=}
+
+Request{method=PUT, url=http://127.0.0.1:3031/ktg-mes/2023/10/14/logo-fox_20231014014250A001.png, tags={}}
+
+本地 npm  run  dev 下面 minio  访问正常 ，
+
+http://127.0.0.1:3031/ktg-mes/2023/10/13/logo-fox_20231013231442A001.png 
+
+http://127.0.0.1:3031/ktg-mes/2023/10/13/%E5%9C%B0%E7%90%83_20231013233518A001.png
+http://127.0.0.1:3031/ktg-mes/2023/10/13/地球_20231013233518A001.png
+
+但是，
+在  本地 windows下面的nginx 和远程linux  nginx  部署 都 出现 minio 访问失败的情况 。
+region =null
+C:\Users\LLL\AppData\Local\Temp\tomcat.8070.6730135242219883549\work\Tomcat\localhost\ROOT\upload_d45bd33d_49e8_4ea6_affa_2f99a50285fc_00000000.tmp
+
+工艺线路 ，点击  子项 ，出错 
+### Error querying database. Cause: java.sql.SQLSyntaxErrorException: Unknown column 'is_check' in 'field list' 
+ pro_route_process
+
+缺少  is_check  是否质检字段 ，需要在 表pro_route_process 中 补充 ，
+private String isCheck;
+
+生产排产 菜单下面的 生产排产 ， 点击 生产工单 报错 
+
+selectProTaskList
+
+ Unknown column 'pro_task.route_id'
+ Unknown column 'pro_task.routeCode'
+
+ private Long routeId;
+ private String routeCode;
+ 
+
+ProFeedbackMapper.selectProFeedbackList
+Unknown column 'pro_feedback.route_id'
+ private Long routeId;
+ private String routeCode;
+ 
+    @Excel(name = "合格品数量")
+    private BigDecimal quantityQualified;
+
+    /** 不良品数量 */
+    @Excel(name = "不良品数量")
+    private BigDecimal quantityUnquanlified;
+
+    @Excel(name = "待检测数量")
+    private BigDecimal quantityUncheck;
+
+---》 double ， 12， 2 
+
+===minio 上传出错=============
+webpack:///src/components/ImageUpload/index.vue
+
+strs += list[i].url.replace(this.baseUrl, "") + separator;
+
+Uncaught TypeError: Cannot read properties of undefined (reading 'replace')
+、
+后面已经能够上传 ，上面的出错信息 没有处理
+
+
+/www/server/panel/vhost/nginx/smart-mes.com.conf
+
+
+proxy_pass http://47.242.184.27:8070/;
+
+/opt/ktg-mes/dist
+
+cd  /opt/ktg-mes
+
+nohup java -jar ktg-admin.jar > /dev/null 2>&1 &
+
+
+ ps aux  |  grep  java
+
+
+/47.242.184.27  下面 运行 java -jar ktg-admin.jar  自动退出， 只提示 killed  ，原因未知 ， 105 主机运行成功 
+可惜主机配置太低 ，  考虑在 150.158.15.149 下面  通过docker安装 java 环境 ，并运行   ktg-admin.jar
+
+使用 docker  部署 java  
+
+docker pull openjdk:8
+
+
+docker run -di --name=jdk1.8 kdvolder/jdk8
+docker exec -it jdk1.8 /bin/bash
+
+java -version
+上面的方法 ，发现有问题 ， 只好通过下面的 dockerfile 方法，构建java运行环境，成功 。
+
+这个 doeker的 image 也可以删除了  ， 最后使用 150.158.15.149 下面的 dockerfile 生成了 ktg-admin镜像
+
+
+http://47.242.184.27:8071
+admin/addmin
+
+ 
+ 用户图像上传 ， 本地 直接 运行和 本地 nginx 部署 下 ， 都能上传图像到 minio下面 ， 
+部署到 linux后 却不能上传， 原因待查。
+// 用户头像上传
+export function uploadAvatar(data) {
+  return request({
+    url: '/system/user/profile/avatar',
+    method: 'post',
+    data: data
+  })
+}
+
+
+url= /system/user/profile/avatar
+
+baseDir=/home/www/ktg/uploadPath/avatar
+
+absPath=D:\home\www\ktg\uploadPath\avatar\2023\10\16\blob_20231016144430A003.jpeg
+
+avatar = /profile/avatar/2023/10/16/blob_20231016144430A003.jpeg
+
+返回给前端的是 
+imgUrl -> /profile/avatar/2023/10/16/blob_20231016151404A005.jpeg
+
+
+ const avatar = (user.avatar == "" || user.avatar == null) ? require("@/assets/images/profile.jpg") : process.env.VUE_APP_BASE_API + user.avatar;
+
+<img :src="avatar" class="user-avatar">
+
+系统是怎么解析找到这个图片地址http://localhost:8071/prod-api/profile/avatar/2023/10/11/blob_20231011185521A001.jpeg 的呢 ？
+地址给你了， 你是怎么 把它找到的呢 ？
+
+
+
+linux的不能显示图像 
+http://47.242.184.27:8071/prod-api/profile/avatar/2023/10/11/blob_20231011113330A010.jpeg
+
+localhost的 能显示
+http://localhost:8071/prod-api/profile/avatar/2023/10/11/blob_20231011185521A001.jpeg
+数据库 中是 /profile/avatar/2023/10/11/blob_20231011102244A009.jpeg
+ 
+图像究竟存放在哪里呢？
+
+public static String getAvatarPath()
+    {
+        return getProfile() + "/avatar";
+    }
+
+profile: /home/www/ktg/uploadPath
+
+* 默认上传的地址
+ private static String defaultBaseDir = RuoYiConfig.getProfile();
+
+
+
+系统监控的账户和密码 ruoyi 123456
+
+工作站和工序是一一对应的
+
+=========ktg-mes-pad=======
+采用 uniapp 技术
+
+修改 api 接口   8080 --》  8070，
+localhost ---》150.158.15.149
+
+config.baseUrl = "http://150.158.15.149:8070";  //尾部不要加  /api
+
+{{this.vuex_user.nickName}}    ---》若依，是从数据库中提取的
+
+pad  登录失效以后 ，会引发 访问后端api授权失败的问题 ，而前端并不会提示session失效，重新登录 。
+作为这些问题， 作者肯定是心知肚明的 。
+
+打包为 H5 ，
+d:\projects\mes\ktg\ktg-mes-pad\unpackage\dist\build\h5
+上传到 
+
+/opt/ktg-mes/pad/h5
+47.242.184.27:8072
+
+======ktg 作者交流 ：
+
+1.培训500
+2.安装部署300
+3.售前支持500-1000不等
+4.按具体开发内容核算人天，平均800/人天
+5.按月/按年收费1000/月
+6.按季度/年 6000/年
+7.移动端详谈
+
+----
+我们这边的收费项目主要有:
+1.“前期的系统培训”： 包括MES业务讲解、系统功能模块介绍、开发过程讲解、实施流程介绍。
+2.“系统安装部署”：将目前的系统安装部署在客户指定的服务器上，并进行数据初始化。
+3.“销售售前技术支持”：针对具体的项目提供需求分析、方案规划、远程售前交流。
+4.“定制化开发”：针对具体的功能定制研发（可提供源码交付）。
+5.“实施过程技术支持”：在项目实施过程中提供远程业务和技术支持。
+6.“运维维护”：系统远程运行维护。
+7.大屏和移动端:目前基于他人框架开发，无法开源，需要付费使用。
+
+
+
+
+
+
+
