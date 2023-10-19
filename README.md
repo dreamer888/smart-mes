@@ -3,35 +3,37 @@
 #### 介绍
 专业、通用、开源、MES生产执行管理系统,  若依框架，后端java springboot ，前端vue，移动端uniapp 。
 
-#### 软件架构
-软件架构说明
+体验地址  
 
+47.242.184.27:8071 ,  amdin/123456
+
+
+47.242.184.27:8072 ,  移动端
+
+
+#### 软件架构
+
+当前版本基于RuoYi前后端分离版本开发。
+详情请参照：https://gitee.com/y_project/RuoYi-Vue
+
+移动端端请参考Uniapp相关文档
+ 
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+参考 “实施”  文档
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+ 系统提供“售前”、“实施”、“用户培训”、“运维”等多个阶段的指导文档和教学视频，以帮助非IT专业人士顺利完成MES项目的实施应用。
 
-#### 参与贡献
+#### 部分截图
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+![输入图片说明](ktg-mes/doc/images/%E7%94%9F%E4%BA%A7%E5%B7%A5%E5%8D%95.png)
+ 
+![输入图片说明](ktg-mes/doc/images/%E8%A7%A6%E5%B1%8F.png)
+
+#### 部署，技术支持 ，定制开发 
+QQ 75039960，  手机微信 18665802636
 
 
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
